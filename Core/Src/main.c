@@ -58,7 +58,8 @@ static void MX_ADC1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t moisture = -1;
+uint32_t moisture = -1;
+uint32_t lightValue = -1;
 /* USER CODE END 0 */
 
 /**
@@ -121,10 +122,39 @@ int main(void)
 	  * Evaluate moisture level with if statements
 	  * Figure out what we can do with those values, eg. water plant, send notification, display on led screen, ect.
 	  */
-	 HAL_ADC_PollForConversion(&hadc1,10);
-	 moisture = HAL_ADC_GetValue(&hadc1);
+//	 HAL_ADC_PollForConversion(&hadc1,10);
+//	 moisture = HAL_ADC_GetValue(&hadc1);
+//
+//	 HAL_Delay(500);
 
+
+	 ADC_ChannelConfTypeDef sConfig = {0};
+
+	 // === Read Soil Moisture on ADC1 Channel 0 (PA0) ===
+	 /*
+	  * Configure ADC to read from the channels for the light and moisture sensors
+	  */
+	 sConfig.Channel = ADC_CHANNEL_0;
+	 sConfig.Rank = 1;
+	 sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+	 HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	 HAL_ADC_Start(&hadc1);
+	 HAL_ADC_PollForConversion(&hadc1, 10);
+	 uint16_t moisture = HAL_ADC_GetValue(&hadc1);
+	 HAL_ADC_Stop(&hadc1);
+
+	 //Delay
 	 HAL_Delay(500);
+
+	 // === Read Light Sensor on ADC1 Channel 1 (PA1) ===
+	 sConfig.Channel = ADC_CHANNEL_1;
+	 HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+
+	 HAL_ADC_Start(&hadc1);
+	 HAL_ADC_PollForConversion(&hadc1, 10);
+	 uint16_t light = HAL_ADC_GetValue(&hadc1);
+	 HAL_ADC_Stop(&hadc1);
 
     /* USER CODE END WHILE */
 
@@ -219,6 +249,14 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_12;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
@@ -249,6 +287,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
