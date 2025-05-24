@@ -60,6 +60,7 @@ static void MX_ADC1_Init(void);
 /* USER CODE BEGIN 0 */
 uint32_t moisture = -1;
 uint32_t lightValue = -1;
+uint16_t waterTime = 5000; //in ms
 /* USER CODE END 0 */
 
 /**
@@ -115,6 +116,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+
+
   while (1)
   {
 	 /*TODO:
@@ -127,7 +131,7 @@ int main(void)
 //
 //	 HAL_Delay(500);
 
-
+//	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
 	 ADC_ChannelConfTypeDef sConfig = {0};
 
 	 // === Read Soil Moisture on ADC1 Channel 0 (PA0) ===
@@ -155,6 +159,22 @@ int main(void)
 	 HAL_ADC_PollForConversion(&hadc1, 10);
 	 uint16_t light = HAL_ADC_GetValue(&hadc1);
 	 HAL_ADC_Stop(&hadc1);
+
+
+	 if (moisture >= 700){
+		 //Plant needs to be watered
+		 //Turn on pump for 5 seconds
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+		 HAL_Delay(waterTime);
+		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+
+	 }
+	 else if(moisture>=300 && moisture <700){
+		 //Plant in ideal range
+
+	 }else{
+		 //Soil too wet
+	 }
 
     /* USER CODE END WHILE */
 
@@ -271,19 +291,23 @@ static void MX_ADC1_Init(void)
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_4, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : PA0 PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -295,8 +319,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /*Configure GPIO pin : PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
