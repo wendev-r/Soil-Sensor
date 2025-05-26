@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os2.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -50,6 +51,7 @@ ADC_HandleTypeDef hadc1;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
@@ -97,6 +99,12 @@ int main(void)
   HAL_ADC_Start(&hadc1);
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* Call init function for freertos objects (in app_freertos.c) */
+  MX_FREERTOS_Init();
+
   /* Initialize leds */
   BSP_LED_Init(LED_GREEN);
 
@@ -114,10 +122,15 @@ int main(void)
     Error_Handler();
   }
 
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-
+   osKernelStart();
 
   while (1)
   {
@@ -132,49 +145,49 @@ int main(void)
 //	 HAL_Delay(500);
 
 //	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
-	 ADC_ChannelConfTypeDef sConfig = {0};
+//	 ADC_ChannelConfTypeDef sConfig = {0};
 
 	 // === Read Soil Moisture on ADC1 Channel 0 (PA0) ===
 	 /*
 	  * Configure ADC to read from the channels for the light and moisture sensors
 	  */
-	 sConfig.Channel = ADC_CHANNEL_0;
-	 sConfig.Rank = 1;
-	 sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-	 HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-	 HAL_ADC_Start(&hadc1);
-	 HAL_ADC_PollForConversion(&hadc1, 10);
-	 uint16_t moisture = HAL_ADC_GetValue(&hadc1);
-	 HAL_ADC_Stop(&hadc1);
+//	 sConfig.Channel = ADC_CHANNEL_0;
+//	 sConfig.Rank = 1;
+//	 sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+//	 HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+//
+//	 HAL_ADC_Start(&hadc1);
+//	 HAL_ADC_PollForConversion(&hadc1, 10);
+//	 uint16_t moisture = HAL_ADC_GetValue(&hadc1);
+//	 HAL_ADC_Stop(&hadc1);
 
 	 //Delay
-	 HAL_Delay(500);
+//	 HAL_Delay(500);
+//
+//	 // === Read Light Sensor on ADC1 Channel 1 (PA1) ===
+//	 sConfig.Channel = ADC_CHANNEL_1;
+//	 HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+//
+//	 HAL_ADC_Start(&hadc1);
+//	 HAL_ADC_PollForConversion(&hadc1, 10);
+//	 uint16_t light = HAL_ADC_GetValue(&hadc1);
+//	 HAL_ADC_Stop(&hadc1);
 
-	 // === Read Light Sensor on ADC1 Channel 1 (PA1) ===
-	 sConfig.Channel = ADC_CHANNEL_1;
-	 HAL_ADC_ConfigChannel(&hadc1, &sConfig);
-
-	 HAL_ADC_Start(&hadc1);
-	 HAL_ADC_PollForConversion(&hadc1, 10);
-	 uint16_t light = HAL_ADC_GetValue(&hadc1);
-	 HAL_ADC_Stop(&hadc1);
-
-
-	 if (moisture >= 700){
-		 //Plant needs to be watered
-		 //Turn on pump for 5 seconds
-		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
-		 HAL_Delay(waterTime);
-		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-
-	 }
-	 else if(moisture>=300 && moisture <700){
-		 //Plant in ideal range
-
-	 }else{
-		 //Soil too wet
-	 }
+//
+//	 if (moisture >= 700){
+//		 //Plant needs to be watered
+//		 //Turn on pump for 5 seconds
+//		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+//		 HAL_Delay(waterTime);
+//		 HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+//
+//	 }
+//	 else if(moisture>=300 && moisture <700){
+//		 //Plant in ideal range
+//
+//	 }else{
+//		 //Soil too wet
+//	 }
 
     /* USER CODE END WHILE */
 
@@ -333,6 +346,28 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM3 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM3)
+  {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
