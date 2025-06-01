@@ -1,7 +1,7 @@
 ## Smart Plant Watering System
 
 ##### Hardware used:
-- STM32 Nucleo c310
+- STM32 Nucleo c031
 - SSD 1327 Black and White Oled Display (128x128)
 - Capacitive Soil Sensor
 - TSL2591 Light Sensor
