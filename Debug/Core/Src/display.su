@@ -1,0 +1,3 @@
+../Core/Src/display.c:17:9:u8x8_byte_4wire_hw_spi	32	static
+../Core/Src/display.c:42:9:u8x8_gpio_and_delay_stm32_spi	32	static
+../Core/Src/display.c:67:6:Display_Init	8	static

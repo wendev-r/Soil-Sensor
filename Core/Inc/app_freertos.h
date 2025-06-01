@@ -56,7 +56,8 @@ extern "C" {
 /* USER CODE END EM */
 extern osThreadId_t defaultTaskHandle;
 extern osThreadId_t soilSensorTaskHandle;
-extern osThreadId_t waterPuimpTaskHandle;
+extern osThreadId_t waterPumpTaskHandle;
+extern osThreadId_t displayTaskHandle;
 
 /* Exported function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -65,7 +66,8 @@ extern osThreadId_t waterPuimpTaskHandle;
 
 void StartDefaultTask(void *argument);
 void StartSoilSensorTask(void *argument);
-void StartWaterPuimpTaskTask(void *argument);
+void StartWaterPumpTaskTask(void *argument);
+void StartDisplayTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 

@@ -17,6 +17,7 @@
  */
 #include "main.h"
 extern ADC_HandleTypeDef hadc1;
+#include "display.h"
 
 
 /* USER CODE END Header */
@@ -69,11 +70,18 @@ const osThreadAttr_t soilSensorTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 128 * 4
 };
-/* Definitions for waterPuimpTask */
-osThreadId_t waterPuimpTaskHandle;
-const osThreadAttr_t waterPuimpTask_attributes = {
-  .name = "waterPuimpTask",
+/* Definitions for waterPumpTask */
+osThreadId_t waterPumpTaskHandle;
+const osThreadAttr_t waterPumpTask_attributes = {
+  .name = "waterPumpTask",
   .priority = (osPriority_t) osPriorityLow,
+  .stack_size = 128 * 4
+};
+/* Definitions for displayTask */
+osThreadId_t displayTaskHandle;
+const osThreadAttr_t displayTask_attributes = {
+  .name = "displayTask",
+  .priority = (osPriority_t) osPriorityBelowNormal,
   .stack_size = 128 * 4
 };
 
@@ -113,8 +121,11 @@ void MX_FREERTOS_Init(void) {
   /* creation of soilSensorTask */
   soilSensorTaskHandle = osThreadNew(StartSoilSensorTask, NULL, &soilSensorTask_attributes);
 
-  /* creation of waterPuimpTask */
-  waterPuimpTaskHandle = osThreadNew(StartWaterPuimpTaskTask, NULL, &waterPuimpTask_attributes);
+  /* creation of waterPumpTask */
+  waterPumpTaskHandle = osThreadNew(StartWaterPumpTaskTask, NULL, &waterPumpTask_attributes);
+
+  /* creation of displayTask */
+  displayTaskHandle = osThreadNew(StartDisplayTask, NULL, &displayTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
@@ -157,7 +168,7 @@ void StartSoilSensorTask(void *argument)
 		ADC_ChannelConfTypeDef sConfig = {0};
 		SensorData_t localData;
 		//Read Sensors
-		sConfig.Channel = ADC_CHANNEL_0;
+		sConfig.Channel = ADC_CHANNEL_6;
 		sConfig.Rank = 1;
 		sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
@@ -189,31 +200,55 @@ void StartSoilSensorTask(void *argument)
   /* USER CODE END soilSensorTask */
 }
 
-/* USER CODE BEGIN Header_StartWaterPuimpTaskTask */
+/* USER CODE BEGIN Header_StartWaterPumpTaskTask */
 /**
-* @brief Function implementing the waterPuimpTask thread.
+* @brief Function implementing the waterPumpTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartWaterPuimpTaskTask */
-void StartWaterPuimpTaskTask(void *argument)
+/* USER CODE END Header_StartWaterPumpTaskTask */
+void StartWaterPumpTaskTask(void *argument)
 {
-  /* USER CODE BEGIN waterPuimpTask */
+  /* USER CODE BEGIN waterPumpTask */
   /* Infinite loop */
+
   for(;;)
   {
-	  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
-	  // Turn on pump
-	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
-
-	  // Run pump for 5 seconds (adjust as needed)
-	  osDelay(5000);
-
-	  // Turn off pump
-	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+    osDelay(1);
   }
-  /* USER CODE END waterPuimpTask */
+  /* USER CODE END waterPumpTask */
+}
+
+/* USER CODE BEGIN Header_StartDisplayTask */
+/**
+* @brief Function implementing the displayTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartDisplayTask */
+void StartDisplayTask(void *argument)
+{
+  /* USER CODE BEGIN displayTask */
+  /* Infinite loop */
+	SensorData_t localCopy;
+	    char buffer[32];
+
+	    Display_Init();
+
+	    for (;;)
+	    {
+	        osMutexAcquire(dataMutex, osWaitForever);
+	        localCopy = sensorData;
+	        osMutexRelease(dataMutex);
+
+	        snprintf(buffer, sizeof(buffer), "Soil:%u", localCopy.soilMoisture);
+	        u8x8_DrawString(&u8x8, 0, 0, buffer);
+	        snprintf(buffer, sizeof(buffer), "Light:%u", localCopy.lightLevel);
+	        u8x8_DrawString(&u8x8, 0, 1, buffer);
+
+	        osDelay(1000);
+	    }
+  /* USER CODE END displayTask */
 }
 
 /* Private application code --------------------------------------------------*/

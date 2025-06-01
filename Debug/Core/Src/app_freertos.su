@@ -1,3 +1,5 @@
-../Core/Src/app_freertos.c:81:6:MX_FREERTOS_Init	8	static
-../Core/Src/app_freertos.c:125:6:StartDefaultTask	16	static
-../Core/Src/app_freertos.c:141:6:StartSoilSensorTask	40	static
+../Core/Src/app_freertos.c:98:6:MX_FREERTOS_Init	8	static
+../Core/Src/app_freertos.c:146:6:StartDefaultTask	16	static
+../Core/Src/app_freertos.c:163:6:StartSoilSensorTask	48	static
+../Core/Src/app_freertos.c:210:6:StartWaterPumpTaskTask	16	static
+../Core/Src/app_freertos.c:229:6:StartDisplayTask	64	static

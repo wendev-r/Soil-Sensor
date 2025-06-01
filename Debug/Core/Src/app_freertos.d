@@ -29,6 +29,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.c ../Core/Inc/main.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_flash_ex.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_pwr.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_pwr_ex.h \
+ ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_spi.h \
+ ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_spi_ex.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim_ex.h \
  ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart.h \
@@ -36,7 +38,7 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.c ../Core/Inc/main.h \
  ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.h \
  ../Core/Inc/stm32c0xx_nucleo_conf.h \
  ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h \
- ../Core/Inc/app_freertos.h \
+ ../Core/Inc/display.h ../Core/Inc/u8x8.h ../Core/Inc/app_freertos.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h \
@@ -79,6 +81,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.c ../Core/Inc/main.h \
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_flash_ex.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_pwr.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_pwr_ex.h:
+../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_spi.h:
+../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_spi_ex.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_tim_ex.h:
 ../Drivers/STM32C0xx_HAL_Driver/Inc/stm32c0xx_hal_uart.h:
@@ -86,6 +90,8 @@ Core/Src/app_freertos.o: ../Core/Src/app_freertos.c ../Core/Inc/main.h \
 ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo.h:
 ../Core/Inc/stm32c0xx_nucleo_conf.h:
 ../Drivers/BSP/STM32C0xx_Nucleo/stm32c0xx_nucleo_errno.h:
+../Core/Inc/display.h:
+../Core/Inc/u8x8.h:
 ../Core/Inc/app_freertos.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
